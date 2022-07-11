@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'AngularJasmineTesting';
+
+  public startCount:number=5;
+  public doesItRealyShow:boolean=false;
+
+  outputCount(data:any){
+    console.log(data);
+  }
+
 }

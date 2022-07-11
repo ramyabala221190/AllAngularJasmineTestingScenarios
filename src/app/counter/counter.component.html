@@ -1,0 +1,13 @@
+<h4>Counter</h4>
+
+Count:<p data-testid="count">{{startCount}}</p>
+
+<button (click)="increment()" data-testid="increment-button">Increment</button>
+<button (click)="decrement()" data-testid="decrement-button">Decrement</button>
+
+<input [(ngModel)]="resetInput" data-testid="reset-input">
+<button (click)="reset()" data-testid="reset-button">Reset</button>
+
+<div *ngIf="doesShow && doesItRealyShow">
+<button (click)="visible()" data-testid="show-button">I show up only under a condition !</button>
+</div>
