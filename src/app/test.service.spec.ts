@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TestService } from './test.service';
 import{HttpClientTestingModule, HttpTestingController, TestRequest} from '@angular/common/http/testing';
 import { HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http';
+import { getRequestHelper, postRequestHelper } from './spec-helpers/element.spec-helper';
 
 describe('TestService', () => {
   let service: TestService;
@@ -17,12 +18,18 @@ describe('TestService', () => {
     controller=TestBed.inject(HttpTestingController);
   });
 
+  afterEach(()=>{
+    //verify that there are no pending requests
+    controller.verify();
+  })
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
 
   it('should call users api correctly',()=>{
+const expectedUrl="https://jsonplaceholder.typicode.com/users/1";
 const expectedResponse={
   "id": 1,
   "name": "Leanne Graham",
@@ -58,13 +65,10 @@ err=>console.log(err),
 
 )
 //checks if a single request has been made with this url
-const request:TestRequest=controller.expectOne("https://jsonplaceholder.typicode.com/users/1");
+const request:TestRequest=getRequestHelper(controller,expectedUrl);
 
 // Answer the request so the Observable emits a value.
 request.flush(expectedResponse) //We are resolving the request by providing a successful response
-
-//verify that there are no pending requests
-controller.verify();
 
 // Now verify emitted valued.
 expect(fakeApiResponse).toEqual(expectedResponse);
@@ -76,6 +80,7 @@ expect(fakeApiResponse).toEqual(expectedResponse);
    let expectedError=new ErrorEvent("Request errored out");
    let expectedStatusCode=500;
    let expectedStatusText="Server Error";
+   let expectedUrl="https://jsonplaceholder.typicode.com/users/1";
 
    let actualError:HttpErrorResponse={
      error: {},
@@ -101,7 +106,7 @@ expect(fakeApiResponse).toEqual(expectedResponse);
 
   )
 //checks if a single request has been made with this url
-  const request:TestRequest=controller.expectOne("https://jsonplaceholder.typicode.com/users/1");
+  const request:TestRequest=getRequestHelper(controller,expectedUrl);
 
   //resolve the request by returning an error event
   request.error(expectedError,{status:expectedStatusCode,statusText:expectedStatusText})
@@ -112,5 +117,36 @@ expect(actualError.statusText).toBe(expectedStatusText);
 
   })
 
+  it('should execute post request',()=>{
+
+  let expectedUrl='https://jsonplaceholder.typicode.com/todos/1';
+   let expectedResponse= {
+    "userId": 1,
+    "id": 20,
+    "title": "Shopping",
+    "completed": false
+  }
+
+  let  fakeApiResponse:any;
+
+  service.createToDo().subscribe(
+    user=>{
+    fakeApiResponse=user;
+  },
+  err=>console.log(err),
+  ()=>console.log("Completed")
+
+  )
+  //checks if a single request has been made with this u
+  const request:TestRequest=postRequestHelper(controller,expectedUrl);
+
+   // Answer the request so the Observable emits a value.
+   request.flush(expectedResponse) //We are resolving the request by providing a successful response
+
+   // Now verify emitted valued.
+   expect(fakeApiResponse).toEqual(expectedResponse);
+
+
+  })
 
 });

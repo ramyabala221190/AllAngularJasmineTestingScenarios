@@ -1,3 +1,4 @@
+import { HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { DebugElement } from "@angular/core";
 import { ComponentFixture } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
@@ -24,4 +25,23 @@ export function assertTextContent<T>(fixture:ComponentFixture<T>,selector:string
 export function updateElementContent<T>(fixture:ComponentFixture<T>,selector:string,text:any){
   const debugElement=identifyElementByAttribute(fixture,selector);
   debugElement.nativeElement.value=text;
+}
+
+export function getRequestHelper(controller:HttpTestingController,url:string){
+  return controller.expectOne(
+    {
+   url:url,
+   method:"GET"
+    }
+  )
+}
+
+export function postRequestHelper(controller:HttpTestingController,url:string){
+  return controller.expectOne(
+    {
+   url:url,
+   method:"POST"
+    }
+  )
+
 }

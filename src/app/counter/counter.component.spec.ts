@@ -1,9 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { Router, Routes } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Location } from '@angular/common';
 import { triggerClickEventOnElement, assertTextContent, identifyElementByAttribute, updateElementContent } from '../spec-helpers/element.spec-helper';
+import { TestComponent } from '../test/test.component';
 
 import { CounterComponent } from './counter.component';
 
@@ -11,16 +15,27 @@ describe('CounterComponent', () => {
   let component: CounterComponent;
   let fixture: ComponentFixture<CounterComponent>;
   let debugElement:DebugElement;
+  let router:Router;
+  let location:Location;
+
+  let routes:Routes=[{
+    path:'test',
+    component:TestComponent
+  }]
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CounterComponent ],
-      imports:[FormsModule,HttpClientTestingModule],
+      imports:[FormsModule,HttpClientTestingModule,RouterTestingModule.withRoutes(routes)],
+      providers:[],
+      schemas:[NO_ERRORS_SCHEMA]
     })
     TestBed.compileComponents();
     fixture=TestBed.createComponent(CounterComponent);
     component=fixture.componentInstance;
     debugElement=fixture.debugElement;
+    location=TestBed.get(Location);
+    router=TestBed.get(Router);
     component.startCount=5;
     fixture.detectChanges();
 
@@ -29,6 +44,12 @@ describe('CounterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy(); //smoke test
   });
+
+  it('test navigation to test component',fakeAsync(()=>{
+    triggerClickEventOnElement(fixture,"test-button");
+    tick();
+    expect(location.path()).toEqual("/test");
+  }))
 
   it('increment count',()=>{
     //fire click event on the increment button
