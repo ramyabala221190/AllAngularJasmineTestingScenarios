@@ -1,13 +1,34 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, throwError } from 'rxjs';
+import { SimpleService } from './simple.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient,private simpleService:SimpleService) { }
+
+  addMessageForUser(message:string){
+    this.simpleService.addMessage(message)
+  }
+
+  clearMessages(){
+    this.simpleService.clearMessage();
+  }
+
+
+  createAsyncTask(){
+    setTimeout(()=>{
+      console.log("Executing after 250ms");
+    },250)
+  }
+
+  createAsyncTaskWithPromises(){
+     console.log("executing after promise resolves");
+  }
+
 
 
   getUsers(){

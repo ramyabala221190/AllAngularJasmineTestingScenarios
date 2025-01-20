@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TestService } from '../test.service';
+import { TestService } from '../services/test.service';
 
 @Component({
   selector: 'app-counter',
@@ -7,9 +7,6 @@ import { TestService } from '../test.service';
   styleUrls: ['./counter.component.scss']
 })
 export class CounterComponent implements OnInit {
-
-  constructor(private service:TestService) { }
-
 
   ngOnInit(): void {
   }
@@ -46,12 +43,5 @@ export class CounterComponent implements OnInit {
 
   }
 
-  getUserData(){
-    this.service.getUsers().subscribe(
-      data=>console.log(data),
-      err=>console.log(err),
-      ()=>console.log("completed. Received data")
-    )
-  }
 
 }

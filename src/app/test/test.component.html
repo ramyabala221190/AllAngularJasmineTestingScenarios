@@ -1,1 +1,15 @@
-<p>test works!</p>
+<h4 class="heading1">{{heading1}}</h4>
+
+<h4 class="heading2">{{heading2}}</h4>
+
+<input #box> <button (click)="addToDo(box.value)">Add</button>
+
+
+<ul class="user-container">
+    <li class="user-detail" *ngFor="let user of todosList">{{user.name}}</li>
+</ul>
+
+<div class="child-component-container" *ngFor="let user of todosList">
+    <app-child [user]="user" (action)="takeActionForChild()"></app-child>
+</div>
+

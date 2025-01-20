@@ -1,1 +1,12 @@
-<app-counter [startCount]="startCount" (outputCount)="outputCount($event)" [doesItRealyShow]="doesItRealyShow"></app-counter>
+<!-- <app-counter [startCount]="startCount" (outputCount)="outputCount($event)" [doesItRealyShow]="doesItRealyShow"></app-counter> -->
+
+<a [routerLink]="['counter']">Counter</a>
+
+<a [routerLink]="['test']">Test</a>
+
+<button (click)="navigateToCounter()">Navigate to CounterComponent</button>
+
+<button (click)="navigateToTest()">Navigate to TestComponent</button>
+
+
+<router-outlet></router-outlet>

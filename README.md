@@ -1,3 +1,72 @@
+Automated Testing has 3 parts:
+1. Unit Tests ---testing a single class/file
+2. End to End tests ---> testing the complete application i.e frontend --->backend--->DB
+3. Integration or functional tests --->Involves multiple unit tests but not the complete application. It helps us test not only the class
+but the template as well.
+
+TestBed allows us to test both the component and its template running together.
+A fixture is a wrapper around the component to be tested.
+NO_ERRORS_SCHEMA instructs angular not to validate the templates associated with the component.
+
+Mocking Services injected in the constructor of the component:
+
+Because we dont want to make http calls.
+
+Need to see how to mock child components ----pending
+
+----------------------------------------------------
+Mocking. Type of Mocks:
+
+Dummies
+Stubs
+Spies
+True Mocks
+---------------------------------------------------------
+Type of Unit Tests:
+
+1. Isolated
+2. Integrated: Shallow and Deep
+
+Shallow Test will test only the component(class and template) but not any child components or directives.
+
+----------------------------------------------------------
+Unit Test Tools:
+
+Jasmine and Karma
+Jest
+Web Test runner
+
+End-ToEnd Tests Tools:
+Cypress
+Playright
+Selenium & Webdriver
+
+-------------------------------------------------------------
+The unit test file must have .spec.ts extension
+
+Run "npm run test" to execute all .spec.ts files in the application
+
+Replacing it with xit will prevent karma from executing that test
+---------------------------------------------------------------
+
+Good Unit Tests
+
+1. Follow the AAA method inside the it(). Check the first-test.spec.ts file
+
+1. Arrange all preconditions
+2. Act on the object/class under test
+3. Assert that expected results are produced
+
+Sometimes, it would be better to move the Arrange step into the beforeEach() and just
+do the Act and Assert steps inside the it()
+
+
+2. DAMP principle: Repeat yourself if necessary
+
+
+
+------------------------------------
+
 TestBed
 
 The Angular team provides the TestBed to ease unit testing. The TestBed creates and configures an Angular environment so you can test particular application parts like Components and Services safely and easily.
@@ -88,7 +157,9 @@ First of all, we need to test the presence of app-counter, the independent count
 Next we need to test the inputs and outputs of the child component
 
 -------------------------------------------------------------------------------
-Testing Services:
+Testing Services
+
+For Services without dependencies, you can use isolated tests. 
 
 The HttpClientTestingModule provides a fake implementation of HttpClient. It does not actually send out HTTP requests. It merely intercepts them and records them internally.
 
@@ -114,3 +185,106 @@ controller.verify();
 This fails the test if there are any outstanding requests.
 
 verify guarantees that the code under test is not making excess requests. But it also guarantees that your spec checks all requests, for example by inspecting their URLs.
+
+--------------------------------------------------------------------------
+
+What I understood
+
+1. TestBed is required only when the class has dependencies in the constructor. Otherwise you can simple instantiate the class to be
+tested inside beforeEach(). SimpleService is an example
+
+2. If the service to be tested has a dependency, then we use the TestBed and create a spy for the dependency.
+We use the spy to test if the interaction between the service and its dependency works ok.
+We are not going to check if the dependency is doing the work properly or not.
+DependencyService is an example
+
+The dependency will be tested in its own spec.
+
+3. If the component to be tested has a service as dependency, then again create a spy for the service.
+
+4. If the component to be tested has a child component and if you are doing a shallow test, then dont declare the actual child component.
+Instead declare a mock component.
+If you are doing an deep test, then only declare the child component.
+
+For point 3 and 4, Test component is an example
+
+5. Avoid NO ERROR SCHEMAS. Mock the child components or directives instead. Because the no error schema is going to mask any other
+issues with the template as well.
+
+6. For ngModel not found, import the FormsModule in the imports.
+
+7. For using the Activatedroute, create a mock object and add it to the providers. check AppComponent
+
+8. For using routerLink directive, create a mock directive and declare it. check AppComponent
+
+------------------------------------------------
+
+Principles of testing
+
+1. Dont test the framework. Assume that the framework works correctly.
+
+2. Test your code. Test if you are interacting correctly with the framework.
+
+3. Always ask yourself the question: Are you testing the code or the framework ?
+
+4. What not to test in Router ?
+=>Configuration settings
+=>Router declarations
+=>Internal router functionality
+
+End-To-End testing is easier for testing routing functionality.
+
+As a rule you test the component, not the router, and care only if the component navigates with the right address under the given conditions.
+
+
+---------------------------------------------------
+
+Spies
+
+1. Checking if a method is called in a component
+
+spyOn(component,'sendMessageToParent') is sufficient. Calls to the method will be spied and the original method wont be called.
+
+Below spies on the method and provides a fake implementation of the sendMessageToParent() to be executed using callFake(). The fake implementation is the argument provided
+to the callFake()
+spyOn(component,'sendMessageToParent').and.callFake(()=>{console.log("fake method called")}); //spy on the method
+
+Below will spy on the method and will call the original implementation using callThrough()
+ spyOn(component,'sendMessageToParent').and.callThrough();
+
+ 2.  Using spies with Services
+
+ We use createSpyObj in this case.
+
+ We replace the original service with a spy object. We can pass all the methods that need to be tested in the original service
+ as an array method names in the 2nd argument.
+
+    const spy=jasmine.createSpyObj('TestService',['getUsers']);
+
+    providers:[{provide:TestService,useValue:spy}]
+
+//We then provide a dummy return value for the methods to be tested in the service
+
+let testServiceSpy:jasmine.SpyObj<TestService>;
+ testServiceSpy=TestBed.inject(TestService) as jasmine.SpyObj<TestService>;  
+  testServiceSpy.getUsers.and.returnValue(of(todos)); //arrange
+
+-------------------------------------------------------------------------------------------------------
+
+Asynchronous Tasks
+
+Check ChildComponent for examples
+
+Asynchronous tasks can be tested using fakeAsync+ tick() or fakeAsync+flush()
+
+tick or flush makes the async task sync by moving forward in time before asserting any expectation.
+
+It works with asynchronous tasks created even with promises.
+
+-----------------------------------------------
+
+Coverage report is generated for a folder only if it contains .spec files.
+
+waitForAsync + whenStable() works only with promises.
+
+Thus always go for fakeAsync+ tick() or fakeAsync+flush() to avoid confusion.
